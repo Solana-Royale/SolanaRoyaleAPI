@@ -7,3 +7,6 @@ export const Users = {
     password: "76132d298fe7a93736fa77cc31d4992a7ed8296f94ebf106a462fc51ec9db7e4"
   }
 };
+
+export var GAMES_RUNNING = {};
+export var USER_DATA = {};

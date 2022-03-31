@@ -1,0 +1,14 @@
+{
+  "name": "verysecuresignin",
+  "version": "1.0.0",
+  "description": "An encryption based signin system similar to JWT",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "Cosmos Softwares",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^4.1.1"
+  }
+}

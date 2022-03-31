@@ -10,7 +10,7 @@
   },
   "type": "module",
   "scripts": {
-    "start": "yarn && node --experimental-json-modules index.js"
+    "start": "yarn && node --experimental-json-modules src/app.js"
   },
   "devDependencies": {
     "@types/node": "^17.0.21"

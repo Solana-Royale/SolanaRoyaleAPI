@@ -38,7 +38,8 @@ router.get("/", (req, res) => {
     var session = GAMES_RUNNING[sessionId];
     var gameResponse = AVAILABLE_GAMES[session.gameId].play.action(
       USER_DATA[userid],
-      data
+      data,
+      session
     );
     if (gameResponse !== null) {
       if (!USER_DATA[userid].hasPlayed.includes(session.gameId)) {

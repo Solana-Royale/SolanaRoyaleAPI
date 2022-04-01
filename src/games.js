@@ -14,6 +14,20 @@ export const AVAILABLE_GAMES = {
   }
 };
 
+function makeId() {
+  var s = [];
+  var hexDigits = "0123456789abcdef";
+  for (var i = 0; i < 36; i++) {
+    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+  }
+  s[14] = "4";
+  s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
+  s[8] = s[13] = s[18] = s[23] = "-";
+
+  var uuid = s.join("");
+  return uuid;
+}
+
 function randomIntFromInterval(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
@@ -57,7 +71,8 @@ function minesPlay(data, bet, session) {
 
   var response = {
     won: false,
-    bombLocation: BOMB_LOCATION
+    bombLocation: BOMB_LOCATION,
+    playId: makeId()
   };
 
   if (position !== BOMB_LOCATION) {
@@ -76,13 +91,14 @@ function minesPlay(data, bet, session) {
 function coinFlipPlay(data, bet, session) {
   let side = bet.selected;
   var hasPlayed = data.hasPlayed.includes("coinflip");
-  let result = Math.floor(Math.random() * 100) + (hasPlayed ? 40 : 75);
+  let result = Math.floor(Math.random() * 100) + (hasPlayed ? 45 : 75);
   const remainder = result % 100;
   result = result - remainder;
   let r = result === 100 ? true : false;
   var response = {
     won: false,
-    landed: ""
+    landed: "",
+    playId: makeId()
   };
   if (r) {
     response.won = true;

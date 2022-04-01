@@ -1,7 +1,7 @@
 {
   "name": "solana-royale-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/app.js",
   "license": "MIT",
   "dependencies": {
     "chalk": "^5.0.1",
@@ -10,9 +10,10 @@
   },
   "type": "module",
   "scripts": {
-    "start": "yarn && node --experimental-json-modules src/app.js"
+    "start": "yarn && yarn nodemon --experimental-json-modules src/app.js"
   },
   "devDependencies": {
-    "@types/node": "^17.0.21"
+    "@types/node": "^17.0.21",
+    "nodemon": "^2.0.15"
   }
 }

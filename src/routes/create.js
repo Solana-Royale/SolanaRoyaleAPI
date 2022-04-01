@@ -2,6 +2,7 @@ import { Router } from "express";
 import VSSI from "../lib/VSSI/index.js";
 import { Users, GAMES_RUNNING, USER_DATA } from "../data.js";
 import { AVAILABLE_GAMES } from "../games.js";
+import { info, error } from "../utils/logger.js";
 
 const router = Router();
 
@@ -9,9 +10,13 @@ router.get("/", (req, res) => {
   const gid = req.query.gid;
   var token = req.query.token;
 
-  var tkd = VSSI.parseToken(token, {
-    userIpAddress: req.headers["x-forwarded-for"] || req.socket.remoteAddress
-  });
+  try {
+    var tkd = VSSI.parseToken(token, {
+      userIpAddress: req.headers["x-forwarded-for"] || req.socket.remoteAddress
+    });
+  } catch (ex) {
+    error(ex);
+  }
 
   if (tkd === undefined) {
     res.status(400).json({

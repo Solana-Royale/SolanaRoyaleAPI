@@ -6,12 +6,12 @@ import base58 from "bs58";
 
 const router = Router();
 
-function generateUserToken(username, password, ip) {
+function generateUserToken(address, password, ip) {
   const signatureUint8 = base58.decode(password);
   const nonceUint8 = new TextEncoder().encode(
-    "I am logging into Solana Royale using my Solana wallet (" + username + ")"
+    "I am logging into Solana Royale using my Solana wallet (" + address + ")"
   );
-  const pubKeyUint8 = base58.decode(username);
+  const pubKeyUint8 = base58.decode(address);
 
   let verified = false;
 
@@ -29,7 +29,7 @@ function generateUserToken(username, password, ip) {
     return undefined;
   } else {
     var tokenData = {
-      username: username
+      address: address
     };
 
     var metaData = {
@@ -41,19 +41,19 @@ function generateUserToken(username, password, ip) {
 }
 
 router.get("/", (req, res) => {
-  var username = req.query.username;
+  var address = req.query.address;
   var password = req.query.password;
 
   if (
-    username !== undefined &&
-    username !== null &&
-    username !== "" &&
+    address !== undefined &&
+    address !== null &&
+    address !== "" &&
     password !== undefined &&
     password !== null &&
     password !== ""
   ) {
     var token = generateUserToken(
-      username,
+      address,
       password,
       req.headers["x-forwarded-for"] || req.socket.remoteAddress
     );
@@ -61,7 +61,7 @@ router.get("/", (req, res) => {
     if (token === undefined) {
       res.status(400).json({
         error: true,
-        message: "Invalid username or password"
+        message: "Invalid address or password"
       });
     } else {
       res.status(200).json({
@@ -72,7 +72,7 @@ router.get("/", (req, res) => {
   } else {
     res.status(400).json({
       error: true,
-      message: "Invalid username or password"
+      message: "Invalid address or password"
     });
   }
 });

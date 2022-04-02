@@ -6,6 +6,7 @@
   "dependencies": {
     "bs58": "^5.0.0",
     "chalk": "^5.0.1",
+    "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "express": "^4.17.3",
     "tweetnacl": "^1.0.3"

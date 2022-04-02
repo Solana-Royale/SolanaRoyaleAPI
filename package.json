@@ -4,9 +4,11 @@
   "main": "src/app.js",
   "license": "MIT",
   "dependencies": {
+    "bs58": "^5.0.0",
     "chalk": "^5.0.1",
     "crypto": "^1.0.1",
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "tweetnacl": "^1.0.3"
   },
   "type": "module",
   "scripts": {

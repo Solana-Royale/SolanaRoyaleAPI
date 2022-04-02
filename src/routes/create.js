@@ -1,10 +1,12 @@
 import { Router } from "express";
 import VSSI from "../lib/VSSI/index.js";
-import { Users, GAMES_RUNNING, USER_DATA } from "../data.js";
+import { Users, GAMES_RUNNING, USER_DATA, init } from "../data.js";
 import { AVAILABLE_GAMES } from "../games.js";
 import { info, error } from "../utils/logger.js";
 
 const router = Router();
+
+init();
 
 router.get("/", (req, res) => {
   const gid = req.query.gid;

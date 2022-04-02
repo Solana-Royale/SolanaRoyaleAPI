@@ -1,40 +1,42 @@
 import { Router } from "express";
 import VSSI from "../lib/VSSI/index.js";
-import { Users } from "../data.js";
+import { Users, init } from "../data.js";
+import nacl from "tweetnacl";
+import base58 from "bs58";
 
 const router = Router();
 
 function generateUserToken(username, password, ip) {
-  var user = null;
+  const signatureUint8 = base58.decode(password);
+  const nonceUint8 = new TextEncoder().encode(
+    "I am logging into Solana Royale using my Solana wallet (" + username + ")"
+  );
+  const pubKeyUint8 = base58.decode(username);
 
-  for (var i = 0; i < Object.keys(Users).length; i++) {
-    var un = Users[Object.keys(Users)[i]].username;
+  let verified = false;
 
-    if (un === username) {
-      user = Users[Object.keys(Users)[i]];
-      break;
-    }
+  try {
+    verified = nacl.sign.detached.verify(
+      nonceUint8,
+      signatureUint8,
+      pubKeyUint8
+    );
+  } catch {
+    return undefined;
   }
 
-  if (user === null) {
+  if (!verified) {
     return undefined;
   } else {
-    password = VSSI.SHA256.hash("1273454$%[" + password + "[]h&**092");
-    if (user.password === password) {
-      var tokenData = {
-        username: username,
-        password: password,
-        userId: user.id
-      };
+    var tokenData = {
+      username: username
+    };
 
-      var metaData = {
-        userIpAddress: ip
-      };
+    var metaData = {
+      userIpAddress: ip
+    };
 
-      return VSSI.generateToken(tokenData, metaData);
-    } else {
-      return undefined;
-    }
+    return VSSI.generateToken(tokenData, metaData);
   }
 }
 

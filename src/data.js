@@ -1,17 +1,45 @@
-// TODO: Use MongoDB to load user data
+import fs from "fs";
 
-export const Users = {
-  "1234": {
-    id: "1234",
-    username: "vinga",
-    password: "76132d298fe7a93736fa77cc31d4992a7ed8296f94ebf106a462fc51ec9db7e4"
-  },
-  "1111": {
-    id: "1111",
-    username: "test",
-    password: "f90a1758a11b70849cfa937471ad55e998d32dc9fc809bee21c87db71c885e45"
+function updateUsersLocal() {
+  if (!fs.existsSync("data/")) {
+    fs.mkdirSync("data");
   }
-};
+  if (!fs.existsSync("data/u.json")) {
+    fs.writeFileSync("data/u.json", JSON.stringify({}));
+  }
+  Users = JSON.parse(fs.readFileSync("data/u.json").toString());
+}
 
-export var GAMES_RUNNING = {};
-export var USER_DATA = {};
+export function init() {
+  updateUsersLocal();
+}
+
+export function addUser(userObj) {
+  updateUsersLocal();
+  for (var i = 0; i < Object.keys(Users).length; i++) {
+    var user = Users[Object.keys(Users)[i]];
+
+    if (user.username === userObj.username) {
+      return {
+        success: false
+      };
+    }
+  }
+  if (!fs.existsSync("data/")) {
+    fs.mkdirSync("data");
+  }
+  if (!fs.existsSync("data/u.json")) {
+    fs.writeFileSync("data/u.json", JSON.stringify({}));
+  }
+  var users = JSON.parse(fs.readFileSync("data/u.json").toString());
+  users[userObj.id] = userObj;
+  fs.writeFileSync("data/u.json", JSON.stringify(users));
+  updateUsersLocal();
+  return {
+    success: true
+  };
+}
+
+export let Users = {};
+export let GAMES_RUNNING = {};
+export let USER_DATA = {};

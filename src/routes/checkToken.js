@@ -21,7 +21,10 @@ router.get("/", (req, res) => {
     return;
   }
 
-  if (tkd.address === address) {
+  if (
+    tkd.address === address &&
+    tkd.time > new Date().getTime() - 1000 * 60 * 60
+  ) {
     res.status(200).json({
       error: false,
       message: "Valid authorization token"

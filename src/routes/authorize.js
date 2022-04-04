@@ -29,7 +29,8 @@ function generateUserToken(address, password, ip) {
     return undefined;
   } else {
     var tokenData = {
-      address: address
+      address: address,
+      time: new Date.getTime()
     };
 
     var metaData = {

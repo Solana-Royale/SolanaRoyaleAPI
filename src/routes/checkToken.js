@@ -7,6 +7,8 @@ router.get("/", (req, res) => {
   var token = Buffer.from(req.query.token, "base64");
   var address = req.query.address;
 
+  console.log(token);
+
   var tkd = VSSI.parseToken(token, {
     userIpAddress: req.headers["x-forwarded-for"] || req.socket.remoteAddress
   });

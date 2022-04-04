@@ -30,7 +30,7 @@ function generateUserToken(address, password, ip) {
   } else {
     var tokenData = {
       address: address,
-      time: new Date.getTime()
+      time: new Date().getTime()
     };
 
     var metaData = {

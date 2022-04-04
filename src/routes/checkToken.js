@@ -4,7 +4,7 @@ import VSSI from "../lib/VSSI/index.js";
 const router = Router();
 
 router.get("/", (req, res) => {
-  var token = Buffer.from(req.query.token, "base64");
+  var token = Buffer.from(req.query.token, "base64").toString();
   var address = req.query.address;
 
   console.log(token);

@@ -1,0 +1,35 @@
+import { Router } from "express";
+import VSSI from "../lib/VSSI/index.js";
+
+const router = Router();
+
+router.get("/", (req, res) => {
+  var token = req.query.token;
+  var address = req.query.address;
+
+  var tkd = VSSI.parseToken(token, {
+    userIpAddress: req.headers["x-forwarded-for"] || req.socket.remoteAddress
+  });
+
+  if (tkd === undefined) {
+    res.status(400).json({
+      error: true,
+      message: "Invalid authorization token"
+    });
+    return;
+  }
+
+  if (tkd.address === address) {
+    res.status(200).json({
+      error: false,
+      message: "Valid authorization token"
+    });
+  } else {
+    res.status(400).json({
+      error: true,
+      message: "Invalid authorization token"
+    });
+  }
+});
+
+export default router;

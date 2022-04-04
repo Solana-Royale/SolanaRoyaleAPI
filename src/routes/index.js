@@ -11,6 +11,6 @@ router.use("/games/create", create);
 router.use("/games/play", play);
 router.use("/authorize", authorize);
 router.use("/register", register);
-router.use("/checkToken", register);
+router.use("/checkToken", checkToken);
 
 export default router;

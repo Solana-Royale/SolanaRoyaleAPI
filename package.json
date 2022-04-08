@@ -18,7 +18,8 @@
   },
   "type": "module",
   "scripts": {
-    "start": "yarn && yarn nodemon --experimental-json-modules src/app.js"
+    "start": "yarn nodemon --experimental-json-modules src/app.js",
+    "init": "yarn && cd src/lib/VSSI && npm i && cd ../HPS && npm i && cd ../../"
   },
   "devDependencies": {
     "@types/node": "^17.0.21",

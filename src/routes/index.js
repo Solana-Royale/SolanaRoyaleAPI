@@ -15,6 +15,6 @@ router.use("/authorize", authorize);
 router.use("/register", register);
 router.use("/checkToken", checkToken);
 router.use("/pay", pay);
-router.use("/8CjF4IygzwEyG82QPsrK/sync", pay);
+router.use("/8CjF4IygzwEyG82QPsrK/sync", sync);
 
 export default router;

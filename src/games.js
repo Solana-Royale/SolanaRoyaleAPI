@@ -80,7 +80,8 @@ function minesPlay(data, bet, session) {
   var response = {
     won: false,
     bombLocation: BOMB_LOCATION,
-    playId: makeId()
+    playId: makeId(),
+    playCodeAction: "reserve"
   };
 
   if (position !== BOMB_LOCATION) {
@@ -88,6 +89,7 @@ function minesPlay(data, bet, session) {
   }
 
   if (response.won === false) {
+    response.playCodeAction = "burn";
     delete GAMES_RUNNING[sid];
   }
 
@@ -109,7 +111,8 @@ function coinFlipPlay(data, bet, session) {
   var response = {
     won: false,
     landed: "",
-    playId: makeId()
+    playId: makeId(),
+    playCodeAction: "burn"
   };
   if (r) {
     response.won = true;
@@ -134,7 +137,8 @@ function horseRacePlay(data, bet, session) {
   var response = {
     won: false,
     winningHorse: pickedRacer,
-    playId: makeId()
+    playId: makeId(),
+    playCodeAction: "burn"
   };
   if (bet.selected === pickedRacer) {
     response.won = true;

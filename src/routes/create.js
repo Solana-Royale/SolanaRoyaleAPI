@@ -10,30 +10,28 @@ init();
 
 router.get("/", (req, res) => {
   const gid = req.query.gid;
-  var token = req.query.token;
+  var token = Buffer.from(req.query.token, "base64").toString();
+  var address = req.query.address;
 
-  try {
-    var tkd = VSSI.parseToken(token, {
-      userIpAddress: req.headers["x-forwarded-for"] || req.socket.remoteAddress
-    });
-  } catch (ex) {
-    error(ex);
-  }
+  var tkd = VSSI.parseToken(token, {
+    userIpAddress: req.headers["x-forwarded-for"] || req.socket.remoteAddress
+  });
 
   if (tkd === undefined) {
-    res.status(400).json({
+    return res.status(400).json({
       error: true,
       message: "Invalid authorization token"
     });
-    return;
   }
 
-  if (Users[tkd.userId].password !== tkd.password) {
-    res.status(400).json({
+  if (
+    tkd.address === address &&
+    tkd.time > new Date().getTime() - 1000 * 60 * 60
+  ) { } else {
+    return res.status(400).json({
       error: true,
       message: "Invalid authorization token"
     });
-    return;
   }
 
   var userid = tkd.userId;

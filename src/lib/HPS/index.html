@@ -1,0 +1,89 @@
+<h1>Hover Mint Custom Payment Server - Demo</h1>
+<p>
+    This is a demo of the custom payment server for the Hover Mint project.
+</p>
+<span>Log: </span><code id="state"></code>
+<p id="instruction"></p>
+<input id="walletAddress" type="text" placeholder="Wallet Address" />
+<input id="signature" type="text" style="display: none;" placeholder="Tx Signature" />
+<button id="confirmBtn" onclick="initTx()">Purchase License</button>
+<script>
+    function setInst(t) {
+        document.getElementById("instruction").innerHTML = t;
+    }
+
+    function setState(t) {
+        document.getElementById("state").innerHTML = t;
+    }
+
+    function initTx() {
+        setState('Starting transaction');
+        var reqState = Math.random().toString().split('.')[1];
+        fetch('http://localhost/requestTransaction/initPurchase/' + document.getElementById('walletAddress').value + '/' + reqState)
+        .then(r => r.json())
+        .then(data => {
+            setState('Transaction started');
+            if (data.error === false) {
+                var txid = data.txid;
+                var amount = data.amount;
+                var status = data.status;
+                var state = data.state;
+
+                if (state === reqState) {
+                    setState('Processing response');
+                    document.getElementById('signature').style.display = 'block';
+                    document.getElementById('walletAddress').style.display = 'none';
+                    document.getElementById('confirmBtn').style.display = 'none';
+                    setInst('Please pay ' + amount.toString() + ' SOL to the following address:<br><code>BDox4b8zqPhc7febXHzvkp4qoPwEncPCDR1a1WUr6iWZ</code><br><br>After payment is sent, enter the tx signature into the Tx Signature field<br>This page will update once payment is received.');
+                    setState('Waiting for payment');
+                    var chkPayment = setInterval(() => {
+                        if (document.getElementById('signature').value !== '') {
+                            setState("Checking tx status");
+                            document.getElementById('signature').style.display = 'none';
+                            fetch('http://localhost/isTransactionSent/' + txid + '/' + document.getElementById('signature').value)
+                            .then(r => r.json())
+                            .then(data => {
+                                if (data.error === true) {
+                                    var xtra = '';
+                                    try {
+                                        if (data.retry === true) {
+                                            xtra = "<br>Retrying...";
+                                        } else {
+                                            xtra = "<br>Transaction failed";
+                                            setInst('Transaction failed<br>' + data.message);
+                                            document.getElementById('signature').value = '';
+                                            document.getElementById('signature').style.display = 'block';
+                                            clearInterval(chkPayment);
+                                        }
+                                    } catch {
+                                        xtra = "<br>Transaction failed";
+                                        setInst('Transaction failed<br>' + data.message);
+                                        document.getElementById('signature').value = '';
+                                        document.getElementById('signature').style.display = 'block';
+                                        clearInterval(chkPayment);
+                                    }
+                                    setState('Error:<br>' + data.message + xtra);
+                                } else {
+                                    if (data.error === false) {
+                                        if (data.message !== "Refunding extra funds") {
+                                            setState('Payment received');
+                                        } else {
+                                            setState('Payment received, refunding extra funds');
+                                        }
+                                        document.getElementById('signature').value = '';
+                                        setInst('Payment received! User ID is ' + data.userID);
+                                        clearInterval(chkPayment);
+                                    }
+                                }
+                            });
+                        }
+                    }, 10e3);
+                } else {
+                    setState('Error:<br>Server responded with an invalid state');
+                }
+            } else {
+                setState('Error:<br>' + data.message);
+            }
+        });
+    }
+</script>

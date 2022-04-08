@@ -43,3 +43,9 @@ export function addUser(userObj) {
 export let Users = {};
 export let GAMES_RUNNING = {};
 export let USER_DATA = {};
+export let adminNonce = '';
+
+export function setAdminNonce(value) {
+  adminNonce = value;
+}
+

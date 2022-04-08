@@ -11,6 +11,8 @@ router.get("/", (req, res) => {
     userIpAddress: req.headers["x-forwarded-for"] || req.socket.remoteAddress
   });
 
+  console.log(tkd)
+
   if (tkd === undefined) {
     res.status(400).json({
       error: true,

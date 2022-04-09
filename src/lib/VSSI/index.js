@@ -190,6 +190,7 @@ function PARSE_TOKEN(token, metadata = {}) {
     } else {
         try {
             var encryptionPwd = privateKey.toString() + SHA256HASH(timestamp.toString()) + sessionPwd + metaEncTag;
+            console.log(AESDecrypt(encData, encryptionPwd, iv))
             var decrypted = JSON.parse(AESDecrypt(encData, encryptionPwd, iv));
             return decrypted;
         } catch (e) {

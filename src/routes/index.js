@@ -6,9 +6,11 @@ import register from "./register.js";
 import checkToken from "./checkToken.js";
 import pay from "./pay.js";
 import sync from "./sync.js";
+import ping from "./ping.js";
 
 const router = Router();
 
+router.use("/ping", ping);
 router.use("/games/create", create);
 router.use("/games/play", play);
 router.use("/authorize", authorize);

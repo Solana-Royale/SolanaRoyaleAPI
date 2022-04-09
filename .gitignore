@@ -4,3 +4,5 @@ gamePlayCodes
 wallet.dat
 privateKey.pem
 publicKey.pem
+sessionPwd.pem
+sessionEq.pem

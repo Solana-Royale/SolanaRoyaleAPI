@@ -2,3 +2,5 @@ node_modules
 completedTX
 gamePlayCodes
 wallet.dat
+privateKey.pem
+publicKey.pem

@@ -7,6 +7,7 @@ const AES = require("crypto-js/aes");
 const SHA256 = require("crypto-js/sha256");
 const crypto = require("crypto");
 const zlib = require('zlib');
+const fs = require('fs');
 
 module.exports = {
     SHA256: {
@@ -30,17 +31,25 @@ module.exports = {
 const sessionPwd = crypto.randomBytes(1024).toString('hex');
 const sessionEqServerSeed = Math.ceil(Math.random() - 100 * 999) + 100
 
-const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-    modulusLength: 4096,
-    publicKeyEncoding: {
-        type: 'spki',
-        format: 'pem'
-    },
-    privateKeyEncoding: {
-        type: 'pkcs8',
-        format: 'pem'
-    }
-});
+const privateKey = fs.readFileSync('privateKey.pem', 'utf8');
+const publicKey = fs.readFileSync('publicKey.pem', 'utf8');
+
+function generateKeyPair() {
+    const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
+        modulusLength: 4096,
+        publicKeyEncoding: {
+            type: 'spki',
+            format: 'pem'
+        },
+        privateKeyEncoding: {
+            type: 'pkcs8',
+            format: 'pem'
+        }
+    });
+
+    fs.writeFileSync('./publicKey.pem', publicKey);
+    fs.writeFileSync('./privateKey.pem', privateKey);
+}
 
 function getPublicKey() {
     return publicKey;

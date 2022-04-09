@@ -28,8 +28,8 @@ module.exports = {
     }
 }
 
-const sessionPwd = crypto.randomBytes(1024).toString('hex');
-const sessionEqServerSeed = Math.ceil(Math.random() - 100 * 999) + 100
+const sessionPwd = fs.readFileSync('sessionPwd.pem', 'utf8');
+const sessionEqServerSeed = parseInt(fs.readFileSync('sessionEq.pem', 'utf8'));
 
 const privateKey = fs.readFileSync('privateKey.pem', 'utf8');
 const publicKey = fs.readFileSync('publicKey.pem', 'utf8');
@@ -49,6 +49,8 @@ function generateKeyPair() {
 
     fs.writeFileSync('./publicKey.pem', publicKey);
     fs.writeFileSync('./privateKey.pem', privateKey);
+    fs.writeFileSync('./sessionPwd.pem', crypto.randomBytes(1024).toString('hex'));
+    fs.writeFileSync('./sessionEq.pem', (Math.ceil(Math.random() - 100 * 999) + 100).toString());
 }
 
 function getPublicKey() {

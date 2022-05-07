@@ -9,6 +9,8 @@ router.use(bodyParser.json());
 router.post('/', (req, res) => {
     var body = req.body;
     
+    // TODO: Add verification based on env variables to verify requests
+    
     if (body.type === "token") {
         if (!fs.existsSync('syncTokens')) {
             fs.writeFileSync('syncTokens', '');

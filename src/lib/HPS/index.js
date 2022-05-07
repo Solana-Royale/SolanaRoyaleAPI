@@ -22,9 +22,9 @@ connection = new web3.Connection(
 
 function encrypt(algorithm, password, text, cb) {
 	crypto.scrypt(password, 'salt', 24, (err, key) => {
-	  if (err) throw err;
-	  // After that, we will generate a random iv (initialization vector)
-	  crypto.randomFill(new Uint8Array(16), (err, iv) => {
+	 if (err) throw err;
+	 // After that, we will generate a random iv (initialization vector)
+	 crypto.randomFill(new Uint8Array(16), (err, iv) => {
 		if (err) throw err;
 
 		// Create Cipher with key and iv
@@ -44,7 +44,7 @@ function encrypt(algorithm, password, text, cb) {
 
 		cipher.write(text);
 		cipher.end();
-	  });
+	 });
 	});
 }
 
@@ -128,10 +128,12 @@ function hasTxBeenCompleted(sig) {
 	if (!fs.existsSync('wallet.dat')) {
 		console.log('Create Solana wallet\n----------------------------\n');
 		
-		const pass = prompt.questionNewPassword('Wallet Password: ');
+		const pass = "P$6sgd&5#CBbc4ix6yL6tChG"
+		const secret = "";
 		
 		wallet = JSON.parse(JSON.stringify(web3.Keypair.generate()));
-		skArray = btoa(Object.values(wallet._keypair.secretKey).toString())
+		console.log(wallet._keypair.secretKey)
+		skArray = btoa(secret.split(", ")).toString()
 		encrypt('aes-192-cbc', pass, skArray, d => {
 			fs.writeFileSync('wallet.dat', d)
 			base()
@@ -148,8 +150,8 @@ function hasTxBeenCompleted(sig) {
 			decrypt(atob(walletData.a), pass, atob(walletData.e), Uint8Array.from(atob(walletData.i).split(',')), r => {
 				try {
 					main(web3.Keypair.fromSecretKey(Uint8Array.from(atob(r).split(','))))
-				} catch {
-					console.log('Failed to decrypt wallet information')
+				} catch (e) {
+					console.log("Failed to decrypt wallet, error:", e);
 				}
 			})
 		}
@@ -214,10 +216,10 @@ async function isTxSent(txid, signature) {
 				"id": 1,
 				"method": "getTransaction",
 				"params": [
-				  signature,
-				  "jsonParsed"
+				 signature,
+				 "jsonParsed"
 				]
-			  }
+			 }
 			var tx = await fetch(web3.clusterApiUrl('mainnet-beta'), {
 				method: 'POST',
 				headers: {

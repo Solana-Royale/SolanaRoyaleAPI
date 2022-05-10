@@ -6,10 +6,10 @@ import base58 from "bs58";
 
 const router = Router();
 
-function generateUserToken(address, password, ip) {
+function generateUserToken(address, password, ip, timestamp) {
   const signatureUint8 = base58.decode(password);
   const nonceUint8 = new TextEncoder().encode(
-    "I am logging into Solana Royale using my Solana wallet (" + address + ")"
+    "I am logging into Solana Royale using my Solana wallet (" + address + ")\n\nCreated at" + new Date(timestamp).toISOString() + "."
   );
   const pubKeyUint8 = base58.decode(address);
 
@@ -44,6 +44,7 @@ function generateUserToken(address, password, ip) {
 router.get("/", (req, res) => {
   var address = req.query.address;
   var password = req.query.password;
+  var timestamp = req.query.timestamp;
 
   if (
     address !== undefined &&
@@ -51,12 +52,16 @@ router.get("/", (req, res) => {
     address !== "" &&
     password !== undefined &&
     password !== null &&
-    password !== ""
+    password !== "" &&
+    timestamp !== undefined &&
+    timestamp !== null &&
+    timestamp !== ""
   ) {
     var token = generateUserToken(
       address,
       password,
-      req.headers["x-forwarded-for"] || req.socket.remoteAddress
+      req.headers["x-forwarded-for"] || req.socket.remoteAddress,
+      timestamp
     );
 
     if (token === undefined) {

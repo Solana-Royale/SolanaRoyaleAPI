@@ -12,7 +12,7 @@ function generateUserToken(address, password, ip, timestamp) {
     "I am logging into Solana Royale using my Solana wallet (" + address + ")\n\nCreated at" + new Date(parseInt(timestamp)).toISOString() + "."
   );
   const pubKeyUint8 = base58.decode(address);
-  console.log("I am logging into Solana Royale using my Solana wallet (" + address + ")\n\nCreated at" + new Date(parseInt(timestamp)).toISOString() + ".")
+  console.log("I am logging into Solana Royale using my Solana wallet (" + address + ")\n\nCreated at " + new Date(parseInt(timestamp)).toISOString() + ".")
 
   let verified = false;
 

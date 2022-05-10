@@ -9,7 +9,7 @@ const router = Router();
 function generateUserToken(address, password, ip, timestamp) {
   const signatureUint8 = base58.decode(password);
   const nonceUint8 = new TextEncoder().encode(
-    "I am logging into Solana Royale using my Solana wallet (" + address + ")\n\nCreated at " + new Date(parseInt(timestamp)).toISOString() + "."
+    "I am logging into Solana Royale using my Solana wallet (" + address + ").\n\nCreated at " + new Date(parseInt(timestamp)).toISOString() + "."
   );
   const pubKeyUint8 = base58.decode(address);
 

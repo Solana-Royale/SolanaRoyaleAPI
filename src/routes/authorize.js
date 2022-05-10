@@ -57,6 +57,13 @@ router.get("/", (req, res) => {
     timestamp !== null &&
     timestamp !== ""
   ) {
+    if (parseInt(timestamp) < new Date().getTime() - 10e3) {
+      return res.status(400).json({
+        error: true,
+        message: "Outdated signature"
+      });
+    }
+
     var token = generateUserToken(
       address,
       password,

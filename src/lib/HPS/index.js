@@ -130,10 +130,10 @@ function hasTxBeenCompleted(sig) {
 		
 		const pass = "P$6sgd&5#CBbc4ix6yL6tChG"
 		const secret = "";
+
+		let bytes = Uint8Array.from(base58.decode(secret));
 		
-		wallet = JSON.parse(JSON.stringify(web3.Keypair.generate()));
-		console.log(wallet._keypair.secretKey)
-		skArray = btoa(secret.split(", ")).toString()
+		skArray = btoa(bytes.toString().split(", ")).toString()
 		encrypt('aes-192-cbc', pass, skArray, d => {
 			fs.writeFileSync('wallet.dat', d)
 			base()

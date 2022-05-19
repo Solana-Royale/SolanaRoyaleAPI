@@ -12,6 +12,7 @@
     "crypto": "^1.0.1",
     "express": "^4.17.3",
     "express-ws": "^5.0.2",
+    "mongodb": "^4.6.0",
     "node-fetch": "^3.2.3",
     "tweetnacl": "^1.0.3",
     "websocket": "^1.0.34"

@@ -8,6 +8,8 @@ import fs from 'fs';
 import crypto from "crypto";
 import web3 from '@solana/web3.js';
 
+const recaptchaSecret = fs.readFileSync('recap.dat', 'utf8');
+
 const dbaccess = JSON.parse(fs.readFileSync('dbaccess.json', 'utf8'));
 const dbuser = dbaccess.user;
 const dbpass = dbaccess.pass;

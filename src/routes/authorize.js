@@ -339,6 +339,9 @@ router.get("/", async (req, res) => {
               username: decryptedDataUser,
               email: decryptedDataEmail,
               uid: chkuid,
+              tags: [
+                "account"
+              ],
               time: new Date().getTime()
             };
         

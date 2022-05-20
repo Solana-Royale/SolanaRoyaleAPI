@@ -12,7 +12,6 @@ router.get("/", (req, res) => {
   });
 
   if (tkd === undefined) {
-    console.log("1")
     res.status(400).json({
       error: true,
       message: "Invalid authorization token"
@@ -21,7 +20,6 @@ router.get("/", (req, res) => {
   }
 
   if (!Object.keys(tkd).includes("tags")) {
-    console.log(tkd)
     return res.status(400).json({
       error: true,
       message: "Invalid authorization token"
@@ -51,7 +49,6 @@ router.get("/", (req, res) => {
       }
     });
   } else {
-    console.log("3")
     res.status(400).json({
       error: true,
       message: "Invalid authorization token"

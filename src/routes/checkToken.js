@@ -19,13 +19,34 @@ router.get("/", (req, res) => {
     return;
   }
 
+  if (!Object.keys(tkd).includes("tags")) {
+    return res.status(400).json({
+      error: true,
+      message: "Invalid authorization token"
+    });
+  }
+
   if (
+    tkd.tags.includes("wallet") &&
     tkd.address === address &&
     tkd.time > new Date().getTime() - 1000 * 60 * 60
   ) {
     res.status(200).json({
       error: false,
       message: "Valid authorization token"
+    });
+  } else if (
+    tkd.tags.includes("account") &&
+    tkd.time > new Date().getTime() - 1000 * 60 * 60 * 24 * 7
+  ) {
+    res.status(200).json({
+      error: false,
+      message: "Valid authorization token",
+      data: {
+        username: tkd.username,
+        email: tkd.email,
+        uid: tkd.uid,
+      }
     });
   } else {
     res.status(400).json({

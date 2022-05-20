@@ -1,6 +1,5 @@
 import { Router } from "express";
 import VSSI from "../lib/VSSI/index.js";
-import { Users, init } from "../data.js";
 import nacl from "tweetnacl";
 import base58 from "bs58";
 import { MongoClient, ServerApiVersion } from 'mongodb';
@@ -99,6 +98,9 @@ function generateUserToken(address, password, ip, timestamp) {
   } else {
     var tokenData = {
       address: address,
+      tags: [
+        "wallet"
+      ],
       time: new Date().getTime()
     };
 
@@ -229,7 +231,7 @@ router.get("/", async (req, res) => {
           } else {
             pendingAccounts.splice(pendingAccounts.indexOf(chkuid), 1);
           }
-          
+
           // Register user
           let salt1 = makeid(32);
           let esalt1 = makeid(32);
@@ -272,6 +274,9 @@ router.get("/", async (req, res) => {
             username: user,
             email: email,
             uid: chkuid,
+            tags: [
+              "account"
+            ],
             time: new Date().getTime()
           };
       

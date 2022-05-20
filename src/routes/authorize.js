@@ -188,16 +188,10 @@ router.get("/", async (req, res) => {
       cap !== ""
     ) {
       var chkuid = multiHash(user, 15e3);
-      if (!pendingAccounts.includes(chkuid)) {
-        pendingAccounts.push(chkuid);
-        return res.status(200).json({
-          error: false,
-          message: "ConfirmUserCreate"
-        });
-      } else {
-        pendingAccounts.splice(pendingAccounts.indexOf(chkuid), 1);
-      }
       if (action && action == "cancel") {
+        if (pendingAccounts.includes(chkuid)) {
+          pendingAccounts.splice(pendingAccounts.indexOf(chkuid), 1);
+        }
         return res.status(200).json({
           error: false,
           message: "Signup Cancelled"
@@ -226,6 +220,16 @@ router.get("/", async (req, res) => {
 
       function proceed() {
         if (userdata === undefined) {
+          if (!pendingAccounts.includes(chkuid)) {
+            pendingAccounts.push(chkuid);
+            return res.status(200).json({
+              error: false,
+              message: "ConfirmUserCreate"
+            });
+          } else {
+            pendingAccounts.splice(pendingAccounts.indexOf(chkuid), 1);
+          }
+          
           // Register user
           let salt1 = makeid(32);
           let esalt1 = makeid(32);

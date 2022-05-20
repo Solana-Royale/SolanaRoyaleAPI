@@ -174,6 +174,7 @@ router.get("/", async (req, res) => {
     var pass = req.query.pass;
     var email = req.query.email;
     var cap = req.query.cap;
+    var action = req.query.action;
 
     if (
       user !== undefined &&
@@ -195,6 +196,12 @@ router.get("/", async (req, res) => {
         });
       }
       pendingAccounts.splice(pendingAccounts.indexOf(chkuid), 1);
+      if (action !== undefined && action !== null && action === "cancel") {
+        return res.status(200).json({
+          error: false,
+          message: "Signup Cancelled"
+        });
+      }
       let userdata = await findUser(chkuid);
 
       recaptcha.checkResponse(cap, function(error, response) {

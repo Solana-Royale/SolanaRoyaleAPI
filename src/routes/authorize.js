@@ -25,6 +25,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 var collection = null;
 var collectionJSON = null;
+var pendingAccounts = [];
 
 function refreshCollection() {
   collection = client.db("SolanaRoyaleDB").collection("users");
@@ -186,6 +187,14 @@ router.get("/", async (req, res) => {
       cap !== ""
     ) {
       var chkuid = multiHash(user, 15e3);
+      if (!pendingAccounts.includes(chkuid)) {
+        pendingAccounts.push(chkuid);
+        return res.status(200).json({
+          error: false,
+          message: "ConfirmUserCreate"
+        });
+      }
+      pendingAccounts.splice(pendingAccounts.indexOf(chkuid), 1);
       let userdata = await findUser(chkuid);
 
       recaptcha.checkResponse(cap, function(error, response) {
@@ -221,7 +230,8 @@ router.get("/", async (req, res) => {
           const cipher1 = crypto.createCipheriv("aes-256-cbc", key, iv1);
           const cipher2 = crypto.createCipheriv("aes-256-cbc", key, iv2);
           const cipher3 = crypto.createCipheriv("aes-256-cbc", key, iv3);
-          let solanaSecret = web3.Keypair.generate().secretKey.toString();
+          let solanaKey = web3.Keypair.generate();
+          let solanaSecret = solanaKey.secretKey.toString();
           solanaSecret = cipher3.update(solanaSecret, "utf-8", "hex") + cipher3.final("hex")
           let lastlogin = new Date().getTime().toString();
           let userdata = {
@@ -264,7 +274,12 @@ router.get("/", async (req, res) => {
             lastLogin: parseInt(lastlogin),
             data: {
               username: user,
-              email: email
+              email: email,
+              spendingActive: true,
+              mobileCompatible: true,
+              wallet: {
+                publicKey: solanaKey.publicKey.toString(),
+              }
             },
             token: token
           }

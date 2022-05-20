@@ -21,7 +21,7 @@ router.get("/", (req, res) => {
   }
 
   if (!Object.keys(tkd).includes("tags")) {
-    console.log("2")
+    console.log(tkd)
     return res.status(400).json({
       error: true,
       message: "Invalid authorization token"

@@ -194,9 +194,10 @@ router.get("/", async (req, res) => {
           error: false,
           message: "ConfirmUserCreate"
         });
+      } else {
+        pendingAccounts.splice(pendingAccounts.indexOf(chkuid), 1);
       }
-      pendingAccounts.splice(pendingAccounts.indexOf(chkuid), 1);
-      if (action !== undefined && action !== null && action === "cancel") {
+      if (action && action == "cancel") {
         return res.status(200).json({
           error: false,
           message: "Signup Cancelled"

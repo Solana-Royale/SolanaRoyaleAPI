@@ -1,6 +1,6 @@
 import { Router } from "express";
 import VSSI from "../lib/VSSI/index.js";
-import { Users, GAMES_RUNNING, USER_DATA, init } from "../data.js";
+import { Users, GAMES_RUNNING, USER_DATA, init, processedTxns } from "../data.js";
 import { AVAILABLE_GAMES } from "../games.js";
 import { info, error } from "../utils/logger.js";
 import fetch from 'node-fetch';
@@ -13,8 +13,14 @@ router.get("/", (req, res) => {
   const gid = req.query.gid;
   var token = Buffer.from(req.query.token, "base64").toString();
   var address = req.query.address;
+  var txid = req.query.txid;
 
-  console.log(token)
+  if (!Object.keys(processedTxns).includes(txid)) {
+    return res.status(400).json({
+      error: true,
+      message: "Invalid transaction id"
+    });
+  }
 
   var tkd = VSSI.parseToken(token, {
     userIpAddress: req.headers["x-forwarded-for"] || req.socket.remoteAddress
@@ -86,7 +92,9 @@ router.get("/", (req, res) => {
         user: {
           username: username,
           id: userid
-        }
+        },
+        betAmount: processedTxns[txid].amount,
+        txid: txid,
       };
       if (Object.keys(USER_DATA).includes(userid)) {
         if (!USER_DATA[userid].hasPlayed.includes(gid)) {
@@ -111,6 +119,7 @@ router.get("/", (req, res) => {
           data: JSON.stringify(GAMES_RUNNING[sessionId])
         })
       });
+      delete processedTxns[txid];
       res.status(200).json({
         error: false,
         sessionId: sessionId,

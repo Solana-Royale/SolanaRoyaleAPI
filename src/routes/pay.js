@@ -3,7 +3,7 @@ import { createRequestTx, processTx, paymentAmounts, wallet } from "../lib/HPS/i
 import web3 from '@solana/web3.js';
 import VSSI from "../lib/VSSI/index.js";
 import crypto from 'crypto';
-import { adminNonce, setAdminNonce } from '../data.js';
+import { adminNonce, GAMES_RUNNING, setAdminNonce, processedTxns } from '../data.js';
 import fs from 'fs';
 
 const router = Router();
@@ -60,6 +60,10 @@ router.get('/create/:wA/:state/:type', (req, res) => {
             error: true,
             message: "Failed to create new transaction"
         });
+    }
+
+    processedTxns[CRTX.txid] = {
+        amount: CRTX.amount
     }
 
     res.json({

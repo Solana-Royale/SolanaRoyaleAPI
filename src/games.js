@@ -1,4 +1,5 @@
 import { GAMES_RUNNING } from "./data.js";
+import { payoutWinnings } from "./lib/HPS/index.js";
 
 export const AVAILABLE_GAMES = {
   coinflip: {
@@ -105,18 +106,22 @@ function weightdFlip(chance = 50) {
 }
 
 function coinFlipPlay(data, bet, session) {
+  var amount = GAMES_RUNNING[session.id].betAmount;
   let side = bet.selected;
   var hasPlayed = data.hasPlayed.includes("coinflip");
-  let r = weightdFlip(hasPlayed ? 45 : 75);
+  let r = weightdFlip(hasPlayed ? 48 : 60);
+  var playId = makeId();
   var response = {
     won: false,
     landed: "",
-    playId: makeId(),
+    playId: playId,
     playCodeAction: "burn"
   };
   if (r) {
     response.won = true;
     response.landed = side;
+    console.log(`[COINFLIP] PlayID ${playId} (txid: ${GAMES_RUNNING[session.id].txid}) won ${side} wallet lost ${amount} SOL`);
+    payoutWinnings(GAMES_RUNNING[session.id].txid);
   } else {
     if (side === "tails") response.landed = "heads";
     else if (side === "heads") response.landed = "tails";

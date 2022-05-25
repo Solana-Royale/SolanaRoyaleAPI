@@ -88,10 +88,12 @@ module.exports = {
 	createRequestTx: requestTx,
 	processTx: isTxSent,
 	paymentAmounts: payment,
-	wallet: getWallet
+	wallet: getWallet,
+	payoutWinnings: payoutWinnings,
 }
 
 var txids = {};
+var completeTxids = {};
 var wallet = null;
 
 function getWallet() {
@@ -121,6 +123,62 @@ function hasTxBeenCompleted(sig) {
 		return fs.readFileSync('completedTx').toString().includes(sig)
 	} catch (e) {
 		return false
+	}
+}
+
+function voidGame(txid) {
+	if (!Object.keys(completeTxids).includes(txid)) {
+		return {
+			error: true,
+			message: "Transaction not found"
+		}
+	}
+	console.log("Voiding transaction", txid)
+	delete completeTxids[txid];
+}
+
+function payoutWinnings(txid) {
+	if (!Object.keys(completeTxids).includes(txid)) {
+		return {
+			error: true,
+			message: "Transaction not found"
+		}
+	}
+	var tx = completeTxids[txid];
+	if (tx.status == 'complete') {
+		var payout = new web3.Transaction().add(
+			web3.SystemProgram.transfer({
+				fromPubkey: wallet.publicKey,
+				toPubkey: new web3.PublicKey(tx.walletAddress),
+				lamports: (tx.amount * 2) * web3.LAMPORTS_PER_SOL,
+			})
+		);
+
+		console.log("Sending " + tx.amount.toString() + " SOL payout to:", tx.walletAddress);
+		web3.sendAndConfirmTransaction(
+			connection,
+			payout,
+			[wallet]
+		);
+
+		return {
+			error: false,
+			txid: txid,
+			amount: tx.amount,
+			status: tx.status,
+			state: tx.state,
+			house: wallet.publicKey.toString()
+		};
+	} else {
+		return {
+			error: true,
+			message: "Transaction not complete",
+			txid: txid,
+			amount: tx.amount,
+			status: tx.status,
+			state: tx.state,
+			house: wallet.publicKey.toString()
+		};
 	}
 }
 
@@ -234,6 +292,8 @@ async function isTxSent(txid, signature) {
 				if (!hasTxBeenCompleted(signature)) {
 					markTxAsComplete(signature);
 					if (transactionAmount == txids[txid].amount) {
+						txids[txid].status = "complete";
+						completeTxids[txid] = JSON.parse(JSON.stringify(txids[txid]));
 						delete txids[txid];
 
 						return {
@@ -287,6 +347,8 @@ async function isTxSent(txid, signature) {
 									[wallet]
 								);
 
+								txids[txid].status = "complete";
+								completeTxids[txid] = JSON.parse(JSON.stringify(txids[txid]));
 								delete txids[txid];
 
 								return {

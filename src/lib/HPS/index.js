@@ -327,7 +327,7 @@ async function isTxSent(txid, signature) {
 
 						return {
 							error: true,
-							message: 'Invalid transaction amount, refunding payment',
+							message: 'Invalid transaction amount, refunding payment+' + transactionAmount.toString() + ' ' + txids[txid].amount.toString(),
 						};
 					} else if (transactionAmount > txids[txid].amount) {
 						setTimeout(() => {

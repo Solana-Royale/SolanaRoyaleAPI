@@ -8,6 +8,8 @@ const btoa = require('btoa');
 const fs = require('fs');
 const base58 = require('bs58');
 
+const RPCUrl = "https://solana-api.syndica.io/access-token/ssfLFL4fynkRRbyQvYsiduCBLanOVWAHzW4E9eAlJhrNKxe8is4FkECX9JadGZKC/rpc";
+
 var payment = {
 	BET005: 0.05,
 	BET01: 0.1,
@@ -16,7 +18,7 @@ var payment = {
 }
 
 connection = new web3.Connection(
-	web3.clusterApiUrl('mainnet-beta'),
+	RPCUrl,
 	'confirmed',
 );
 
@@ -155,6 +157,7 @@ function payoutWinnings(txid) {
 		);
 
 		console.log("Sending " + tx.amount.toString() + " SOL payout to:", tx.walletAddress);
+		
 		web3.sendAndConfirmTransaction(
 			connection,
 			payout,
@@ -227,7 +230,7 @@ function payoutWinnings(txid) {
 					}
 				} catch {
 					connection = new web3.Connection(
-						web3.clusterApiUrl('mainnet-beta'),
+						RPCUrl,
 						'confirmed',
 					);
 					setTimeout(() => {
@@ -236,6 +239,12 @@ function payoutWinnings(txid) {
 				}
 				
 				function display() {
+					// (async function () {
+					// 	const { base58_to_binary, binary_to_base58 } = await import("base58-js");
+					// 	console.log(
+					// 	  binary_to_base58(wallet.secretKey)
+					// 	);
+					//   })();
 					console.log("House wallet loaded")
 					console.log('Balance:', `${balance / web3.LAMPORTS_PER_SOL} SOL`);
 					console.log('Address:', wallet.publicKey.toString());
@@ -278,7 +287,7 @@ async function isTxSent(txid, signature) {
 				 "jsonParsed"
 				]
 			 }
-			var tx = await fetch(web3.clusterApiUrl('mainnet-beta'), {
+			var tx = await fetch(RPCUrl, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -291,17 +300,8 @@ async function isTxSent(txid, signature) {
 			if (tx.transaction.message.instructions[0].parsed.info.destination == wallet.publicKey.toString()) {
 				if (!hasTxBeenCompleted(signature)) {
 					markTxAsComplete(signature);
-					if (transactionAmount == txids[txid].amount) {
-						txids[txid].status = "complete";
-						completeTxids[txid] = JSON.parse(JSON.stringify(txids[txid]));
-						delete txids[txid];
-
-						return {
-							error: false,
-							message: 'Transaction recieved',
-							playCode: addGamePlayCode(),
-						};
-					} else if (transactionAmount < txids[txid].amount) {
+					if (transactionAmount < (txids[txid].amount * 1.025)) {
+						// Too little SOL sent
 						setTimeout(() => {
 							var deduction = 1000;
 							if (parseInt(tx.transaction.message.instructions[0].parsed.info.lamports) - deduction < 0) {
@@ -329,42 +329,56 @@ async function isTxSent(txid, signature) {
 							error: true,
 							message: 'Invalid transaction amount, refunding payment+' + transactionAmount.toString() + ' ' + txids[txid].amount.toString(),
 						};
-					} else if (transactionAmount > txids[txid].amount) {
+					} else if (transactionAmount > (txids[txid].amount * 1.03)) { // take into account 3% sol fee
+						// Too much SOL sent
 						setTimeout(() => {
-							try {
-								console.log("Refunding " + parseInt(((tx.transaction.message.instructions[0].parsed.info.lamports / web3.LAMPORTS_PER_SOL) - txids[txid].amount) * web3.LAMPORTS_PER_SOL) + " lamports to " + txids[txid].walletAddress)
-								var refund = new web3.Transaction().add(
-									web3.SystemProgram.transfer({
-									fromPubkey: wallet.publicKey,
-									toPubkey: new web3.PublicKey(txids[txid].walletAddress),
-									lamports: parseInt(((tx.transaction.message.instructions[0].parsed.info.lamports / web3.LAMPORTS_PER_SOL) - txids[txid].amount) * web3.LAMPORTS_PER_SOL)
-									})
-								);
-			
-								web3.sendAndConfirmTransaction(
-									connection,
-									refund,
-									[wallet]
-								);
+							// try {
+							console.log("Refunding " + parseInt(((tx.transaction.message.instructions[0].parsed.info.lamports / web3.LAMPORTS_PER_SOL) - txids[txid].amount) * web3.LAMPORTS_PER_SOL) + " lamports to " + txids[txid].walletAddress)
+							var refund = new web3.Transaction().add(
+								web3.SystemProgram.transfer({
+								fromPubkey: wallet.publicKey,
+								toPubkey: new web3.PublicKey(txids[txid].walletAddress),
+								lamports: parseInt(((tx.transaction.message.instructions[0].parsed.info.lamports / web3.LAMPORTS_PER_SOL) - txids[txid].amount) * web3.LAMPORTS_PER_SOL)
+								})
+							);
+		
+							web3.sendAndConfirmTransaction(
+								connection,
+								refund,
+								[wallet]
+							);
 
-								txids[txid].status = "complete";
-								completeTxids[txid] = JSON.parse(JSON.stringify(txids[txid]));
-								delete txids[txid];
-
-								return {
-									error: false,
-									message: 'Refunding extra funds',
-									playCode: addGamePlayCode(),
-								};
-							} catch (e) {
-								console.log(e);
-								delete txids[txid];
-								return {
-									error: true,
-									message: 'Failed to refund extra funds. Please contact support.'
-								};
-							}
+							txids[txid].status = "complete";
+							completeTxids[txid] = JSON.parse(JSON.stringify(txids[txid]));
+							// delete txids[txid];
+							// } catch (e) {
+							// 	console.log(e);
+							// 	delete txids[txid];
+							// 	return {
+							// 		error: true,
+							// 		message: 'Failed to refund extra funds. Please contact support.'
+							// 	};
+							// }
 						}, 500);
+
+						return {
+							error: false,
+							message: 'Refunding extra funds',
+							playCode: addGamePlayCode(),
+						};
+					} else {
+						// Success
+						txids[txid].status = "complete";
+						completeTxids[txid] = JSON.parse(JSON.stringify(txids[txid]));
+						delete txids[txid];
+
+						console.log("ok")
+
+						return {
+							error: false,
+							message: 'Transaction recieved',
+							playCode: addGamePlayCode(),
+						};
 					}
 				} else {
 					delete txids[txid];

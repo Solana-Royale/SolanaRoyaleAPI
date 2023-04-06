@@ -109,16 +109,16 @@ router.get("/", (req, res) => {
           losses: 0
         };
       }
-      fetch('http://78.141.228.44/8CjF4IygzwEyG82QPsrK/sync', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          type: "session",
-          data: JSON.stringify(GAMES_RUNNING[sessionId])
-        })
-      });
+      // fetch('http://78.141.228.44/8CjF4IygzwEyG82QPsrK/sync', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: JSON.stringify({
+      //     type: "session",
+      //     data: JSON.stringify(GAMES_RUNNING[sessionId])
+      //   })
+      // });
       delete processedTxns[txid];
       res.status(200).json({
         error: false,

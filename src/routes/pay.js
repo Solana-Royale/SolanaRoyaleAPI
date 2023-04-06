@@ -6,8 +6,9 @@ import crypto from 'crypto';
 import { adminNonce, GAMES_RUNNING, setAdminNonce, processedTxns } from '../data.js';
 import fs from 'fs';
 
+const RPCUrl = "https://solana-api.syndica.io/access-token/ssfLFL4fynkRRbyQvYsiduCBLanOVWAHzW4E9eAlJhrNKxe8is4FkECX9JadGZKC/rpc";
+
 const router = Router();
-const cluster = web3.clusterApiUrl('mainnet-beta');
 
 var adminLoginKeyNum = 1;
 var adminLoginKeyBuilder = '';
@@ -32,6 +33,7 @@ router.get('/:txid/:signature', (req, res) => {
 
     processTx(txid, signature)
     .then(result => {
+        console.log(result)
         res.json(result);
     })
 });

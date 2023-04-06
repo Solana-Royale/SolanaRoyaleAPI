@@ -18,7 +18,7 @@ function deactivatePlayCode(code) {
       }
   }
 
-  fs.writeFileSync('gamePlayCodes', codes.join('\n'));
+  fs.writeFileSync('gamePlayCodes', codes.join('\n') + "\n");
 }
 
 function playCodes() {

@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@solana/web3.js": "^1.42.0",
+    "base58-js": "^2.0.0",
     "body-parser": "^1.20.0",
     "bs58": "^5.0.0",
     "chalk": "^5.0.1",

@@ -67,7 +67,7 @@ wsServer.on(
           if (adminNonce === nonce) {
             authenticated = true;
             connection = new web3.Connection(
-              web3.clusterApiUrl('mainnet-beta'),
+              RPCUrl,
               'confirmed',
             );
             send({

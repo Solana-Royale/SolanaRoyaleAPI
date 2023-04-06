@@ -5,13 +5,16 @@ import ws from "./utils/ws-init.js";
 import { adminNonce } from "./data.js";
 import web3 from '@solana/web3.js';
 import { wallet } from "./lib/HPS/index.js";
+import { existsSync } from "node:fs";
 
 const app = express();
 
 import routes from "./routes/index.js";
 import paths from "./paths/index.js";
 
-const SERVER_PORT = 8080;
+var SERVER_PORT = 8080;
+
+if (existsSync(".prod")) SERVER_PORT = 80;
 
 app.use(cors());
 
